@@ -1,29 +1,33 @@
-const puppeteer = require("puppeteer");
-const cheerio = require("cheerio");
+const axios = require('axios');
+const fs = require('fs');
 
-// crawl captions of one link
-exports.videoCaptionsCrawler = async (url) => {
-  const browser = await puppeteer.launch({
-    args: ["--no-sandbox"],
-  });
-  const page = await browser.newPage();
-  await page.goto(url);
-  const html = await page.content();
-  // click captions btn and crawl captions
-  const results = fetchInfo(html);
+exports.downloadYoutubeVideoCapture = (videoId) => {
+  const options = {
+    method: 'GET',
+    url: 'https://subtitles-for-youtube.p.rapidapi.com/subtitles/BUBjPPU9NwQ.srt',
+    params: {lang: 'en'},
+    headers: {
+      'X-RapidAPI-Key': `${process.env.X_RapidAPI_Key}`,
+      'X-RapidAPI-Host': 'subtitles-for-youtube.p.rapidapi.com'
+    }
+  };
 
-  await browser.close();
-  return results;
-};
+  return axios
+    .request(options)
+    .then(function (response) {
+      fs.writeFile(`./Captures/${videoId}_output.txt`, response.data, function (err) {
+        if (err) {
+          console.error(err);
+        } else {
+          console.log('Response data saved to output.txt');
+        }
+      });
+    })
+    .catch(function (error) {
+      console.error(error);
+    });
+}
 
-const fetchInfo = (html) => {
-  const $ = cheerio.load(html);
-  let urls = [];
-  let results = [];
-  $("#contents  ytd-rich-item-renderer").each((i, link) => {
-    urls.push(
-      "https://www.youtube.com" + $(link).find("#thumbnail").attr("href")
-    );
-  });
-  
-};
+
+
+
