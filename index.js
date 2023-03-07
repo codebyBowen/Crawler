@@ -2,15 +2,17 @@ require("dotenv").config();
 const { crawler } = require("./crawler");
 const { getFile } = require("./download");
 const { whisper } = require("./whisper");
-const { downloadYoutubeVideoCapture } = require("./videoCaptionsCrawler");
+const { downloadAllCaptures } = require("./videoCaptionsCrawler");
 (async () => {
-  // const url = 'https://www.youtube.com/@chuchushoeTW/videos';
-  // const videos = await crawler(url)
+  // crawler a channel video urls and shrink them into a 5 elements array
+  const url = "https://www.youtube.com/@ruriohama/videos";
+  const videoUrls = await crawler(url); // array
+  const shuffled = videoUrls.sort(() => 0.5 - Math.random()); // Shuffle the array
+  const newUrls = shuffled.slice(0, 5); // Take the first five elements
 
-  // const text = await whisper();
-
-    // for(let url of videos) {
-    //   await getFile(url)
-    // }
-    const capture = downloadYoutubeVideoCapture("BUBjPPU9NwQ");
+  // get video capture and save in the Capture folder
+  downloadAllCaptures(newUrls);
+  
+  // use open ai to re generate an article
+  
 })();

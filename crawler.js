@@ -1,6 +1,7 @@
 const puppeteer = require("puppeteer");
 const cheerio = require("cheerio");
 const axios = require("axios");
+const { downloadYoutubeVideoCapture } = require("./videoCaptionsCrawler");
 
 // crawl all video urls of one channel
 exports.crawler = async (url) => {
@@ -11,10 +12,10 @@ exports.crawler = async (url) => {
   await page.goto(url);
   const html = await page.content();
   const results = parse(html);
-  const captions = fetchCaptions(results);
+  // const captions = fetchCaptions(results);
 
-  await browser.close();
-  return captions;
+  // await browser.close();
+  return results;
 };
 
 const parse = (html) => {
@@ -29,31 +30,32 @@ const parse = (html) => {
   return results;
 };
 
-const fetchCaptions = async (urls) => {
-  for (const url of urls) {
-    const browser = await puppeteer.launch({
-      args: ["--no-sandbox"],
-    });
-    const page = await browser.newPage();
-    const captionDownloadUrl = `https://downsub.com/?url=${urlEncode(url)}`;
-    console.log("encodeUrl", captionDownloadUrl);
-    await page.goto(captionDownloadUrl);
-    const html = await page.content();
-    const $ = cheerio.load(html);
-    // test only youtube data api but needs google project api key
-    // try {
-    //   axios.get(`https://www.googleapis.com/youtube/v3/captions/MR-XnSMxuQY`)
-    //   .then((res) => console.log(res))
-    // } catch (error) {
-    //   console.log('error:', error)
-    // }
-    // $('.layout.justify-start.align-center button').each((i, btn) => btn.click())
-    // $('#contents  ytd-rich-item-renderer').each((i, link) => {
-    //   console.log('link', link)
-    //   results.push('https://www.youtube.com' + $(link).find('#thumbnail').attr('href'))
-    // })
-  }
-};
+// const fetchCaptions = async (urls) => {
+//   for (const url of urls) {
+//     const browser = await puppeteer.launch({
+//       args: ["--no-sandbox"],
+//     });
+//     const page = await browser.newPage();
+//     const captionDownloadUrl = `https://downsub.com/?url=${urlEncode(url)}`;
+//     console.log("encodeUrl", captionDownloadUrl);
+//     // await page.goto(captionDownloadUrl);
+//     // const html = await page.content();
+//     // const $ = cheerio.load(html);
+//     // downloadYoutubeVideoCapture()
+//     // test only youtube data api but needs google project api key
+//     // try {
+//     //   axios.get(`https://www.googleapis.com/youtube/v3/captions/MR-XnSMxuQY`)
+//     //   .then((res) => console.log(res))
+//     // } catch (error) {
+//     //   console.log('error:', error)
+//     // }
+//     // $('.layout.justify-start.align-center button').each((i, btn) => btn.click())
+//     // $('#contents  ytd-rich-item-renderer').each((i, link) => {
+//     //   console.log('link', link)
+//     //   results.push('https://www.youtube.com' + $(link).find('#thumbnail').attr('href'))
+//     // })
+//   }
+// };
 
 const urlEncode = (url) => {
   let newUrl = url;
